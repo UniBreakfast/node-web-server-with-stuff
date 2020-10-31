@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "It's just that - a vanilla web server with some of my modules with no thirdparty modules. Yet.",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "index.cjs",
   "dependencies": {
     "c4console": "^1.0.9",
     "up2require": "^1.2.1"

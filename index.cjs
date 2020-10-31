@@ -3,7 +3,7 @@ const c = require('c4console')
 const http = require('http')
 
 
-module.exports = {c, run(options) {
+module.exports = {c, server: {run(options) {
   const dev = typeof options.dev == 'boolean' ? options.dev : !process.env.PORT
   const port = !dev ? process.env.PORT
     : typeof options.port == 'number' ? options.port : 3000
@@ -14,17 +14,17 @@ module.exports = {c, run(options) {
 
   const server = http.createServer(handleRequest)
 
-  server.listen(port, reportStart).on('error', c)
+  server.listen(port, () => reportStart(dev, port)).on('error', c)
 
   server.dev = this.dev = dev
 
   server.public = this.public = options.public || __dirname + '/public'
 
   return server
-}}
+}}}
 
 
-function reportStart() {
+function reportStart(dev, port) {
   if (dev) c(`HTTP Server started at http://localhost:${port}`)
-  else c('===== server started =====')
+  else c(`===== server started on port ${port} =====`)
 }
