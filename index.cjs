@@ -5,7 +5,7 @@ const http = require('http')
 
 module.exports = {c, server: {run(options) {
   const dev = typeof options.dev == 'boolean' ? options.dev : !process.env.PORT
-  const port = !dev ? process.env.PORT
+  const port = !dev ? process.env.PORT || options.port
     : typeof options.port == 'number' ? options.port : 3000
 
   if (dev) require = require('up2require')(require)
