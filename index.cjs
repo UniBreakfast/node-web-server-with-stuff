@@ -16,19 +16,12 @@ module.exports = {c, run(options) {
 
   server.listen(port, reportStart).on('error', c)
 
-  server.dev = dev
+  server.dev = this.dev = dev
 
-  server.public = options.public || __dirname + '/public'
+  server.public = this.public = options.public || __dirname + '/public'
 
   return server
 }}
-
-
-
-
-
-
-
 
 
 function reportStart() {

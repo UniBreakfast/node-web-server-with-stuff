@@ -1,0 +1,26 @@
+{
+  "name": "node-web-server-with-stuff",
+  "version": "1.0.1",
+  "description": "It's just that - a vanilla web server with some of my modules with no thirdparty modules. Yet.",
+  "type": "commonjs",
+  "main": "index.js",
+  "dependencies": {
+    "c4console": "^1.0.9",
+    "up2require": "^1.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UniBreakfast/node-web-server-with-stuff.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UniBreakfast/node-web-server-with-stuff/issues"
+  },
+  "homepage": "https://github.com/UniBreakfast/node-web-server-with-stuff#readme"
+}
