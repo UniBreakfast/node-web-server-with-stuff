@@ -14,7 +14,7 @@ module.exports = {c, server: {run(options={}) {
 
   if (dev) require = require('up2require')(require)
 
-  const handleRequest = require('./reqHan.cjs', dev)
+  const handleRequest = require('./requestHandler.cjs', dev)
 
   const server = http.createServer(handleRequest)
 

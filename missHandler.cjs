@@ -45,7 +45,7 @@ const style = /* css */ `
         line-height: 0.8;
         text-align: right;
         opacity: .5;
-        animation: focus-big 4s infinite alternate
+        animation: focus-big 10s linear infinite alternate
       }
       .issue {
         text-align: left;
@@ -53,21 +53,35 @@ const style = /* css */ `
         margin: 1vw 0 1vw auto;
         font-size: 2.5vw;
         opacity: 0.8;
-        animation: focus-small 2s infinite alternate
+        animation: focus-small 5s linear infinite alternate
+
       }
       .problem {
         text-align: center;
         font-size: 5.3vw;
         opacity: .7;
-        animation: focus 4s infinite alternate
+        animation: focus 10s linear infinite alternate
       }
       @keyframes focus-big {
-        to { filter: blur(1.4vw) }
+        0% { filter: blur(0) }
+        10% { filter: blur(0) }
+        40% { filter: blur(.7vw) }
+        60% { filter: blur(.7vw) }
+        90% { filter: blur(1.4vw) }
+        100% { filter: blur(1.4vw) }
       }
       @keyframes focus {
-        from { filter: blur(.5vw) }
+        0% { filter: blur(.9vw) }
+        10% { filter: blur(.9vw) }
+        40% { filter: blur(.45vw) }
+        60% { filter: blur(.45vw) }
+        90% { filter: blur(0) }
+        100% { filter: blur(0) }
       }
       @keyframes focus-small {
-        from { filter: blur(.3vw) }
+        0% { filter: blur(.3vw) }
+        20% { filter: blur(.3vw) }
+        80% { filter: blur(0) }
+        100% { filter: blur(0) }
       }
 `
