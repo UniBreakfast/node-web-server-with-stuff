@@ -1,6 +1,7 @@
-const {server: {dev, public}} = require('./index.cjs')
-if (dev) require = require('up2require')(require)
+const {server: {dev, public, apis}, up2} = require('.')
+if (dev) require = up2(require)
 
+const handleAPI = require('./apiHandler.cjs', dev)
 const handleMiss = require('./missHandler.cjs', dev)
 
 const {createReadStream, promises: {stat}} = require('fs')
@@ -13,11 +14,11 @@ module.exports = handleRequest
 async function handleRequest(request, response) {
   let {method, url} = request
 
-  if (url.startsWith('/api/')) {
+  if (apis.some(api => url.startsWith(api) && url.length > api.length))    return handleAPI(request, response)
 
-  } else if (treatIfSpecial(request, response)) {
-    return
-  } else if (method == 'GET') {
+  if (treatIfSpecial(request, response)) return
+
+  if (method == 'GET') {
     if (url == '/') url += 'index.html'
     let path = public + url.replace(/\/$/, '')
     const found = await check(path)
@@ -32,7 +33,8 @@ async function handleRequest(request, response) {
     }
     return handleMiss(request, response)
   }
-
+  response.statusCode = 400
+  response.end('"unexpected request method and/or URL"')
 }
 
 async function check(path) {

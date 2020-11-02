@@ -8,13 +8,17 @@ module.exports = {server: {run}, up2, c}
 
 
 function run(options={}) {
-  const dev = this.dev =
-    typeof options.dev == 'boolean' ? options.dev : !process.env.PORT
+  const dev = typeof options.dev == 'boolean' ? options.dev : !process.env.PORT
 
   const port = !dev ? process.env.PORT || options.port
     : typeof options.port == 'number' ? options.port : 3000
 
-  this.public = options.public || process.cwd() + '/public'
+  const public = options.public || process.cwd() + '/public'
+
+  const apis = (options.api ? Array.isArray(options.api) ? options.api
+    : [options.api] : ['api']).map(normalize)
+
+  Object.assign(this, {dev, public, apis})
 
   if (dev) require = up2(require)
 
@@ -22,7 +26,7 @@ function run(options={}) {
 
   const server = http.createServer(handleRequest)
 
-  server.dev = dev
+  Object.assign(server, {dev, public, apis})
 
   server.on('error',
     err => err.code=='EADDRINUSE' ? start(server, port+1) : c(err))
@@ -43,4 +47,8 @@ function start(server, port) {
 function reportStart(dev, port) {
   if (dev) c(`HTTP Server started at http://localhost:${port}`)
   else c(`===== server started on port ${port} =====`)
+}
+
+function normalize(path) {
+  return `/${path.replace(/^[/\\]*|[/\\]*$/g, '')}/`
 }
