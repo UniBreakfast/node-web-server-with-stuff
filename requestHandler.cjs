@@ -14,8 +14,6 @@ module.exports = handleRequest
 async function handleRequest(request, response) {
   let {method, url} = request
 
-  /* ============ */ if (url == '/') c(request.headers.cookie)
-
   if (apis.some(api => url.startsWith(api) && url.length > api.length))    return handleAPI(request, response)
 
   if (treatIfSpecial(request, response)) return
@@ -50,9 +48,6 @@ function giveFile(path, response) {
   const extMatch = path.match(/\.([^\/]*)$/)
   const type = typeDict[extMatch ? extMatch[1] : 'html']
   if (type) response.setHeader('content-type', type)
-  let cookie = 'a=42; Max-Age=10'
-  if (!dev) cookie = `__Secure-${cookie}; Secure; HttpOnly; SameSite=Strict`
-/* ===== */ response.setHeader('set-cookie', cookie)
   createReadStream(path).pipe(response)
 }
 
