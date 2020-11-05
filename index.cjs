@@ -18,7 +18,9 @@ function run(options={}) {
   const apis = (options.api ? Array.isArray(options.api) ? options.api
     : [options.api] : ['api']).map(normalize)
 
-  Object.assign(this, {dev, public, apis})
+  const secure = typeof options.secure == 'boolean' ? options.secure : true
+
+  Object.assign(this, {dev, public, apis, secure})
 
   if (dev) require = up2(require)
 
@@ -26,7 +28,7 @@ function run(options={}) {
 
   const server = http.createServer(handleRequest)
 
-  Object.assign(server, {dev, public, apis})
+  Object.assign(server, {dev, public, apis, secure})
 
   server.on('error',
     err => err.code=='EADDRINUSE' ? start(server, port+1) : c(err))

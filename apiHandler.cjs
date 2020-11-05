@@ -1,6 +1,8 @@
-const {server: {dev}, up2, c} = require('.')
+const {decode} = require('querystring')
+const {stringify, parse} = JSON,  {assign} = Object
+
+const {server: {dev, secure}, up2, c} = require('.')
 if (dev) require = up2(require)
-const {stringify, parse} = JSON
 const checkAuth = require('./authChecker.cjs', dev)
 
 
@@ -10,23 +12,28 @@ module.exports = handleAPI
 async function handleAPI(request, response) {
   response.setHeader('content-type', 'application/json; charset=utf-8')
   try {
-    const [path_api, querystring] = request.url.split('?')
-    const handleRoute = require(`.${path_api}.cjs`, dev)
-    if (handleRoute.secure) {
-      if (!await checkAuth(request, response)) {
+    const {method, url} = request
+    const [path_api, querystring] = url.split('?')
+    const {handler, access} =
+      findHandler(require(`.${path_api}.cjs`, dev), method)
+    if (!handler) throw 'unable to handle this request method'
+    let user = 'guest'
+    if (access != 'guest') {
+      user = await checkAuth(request, response, access)
+      if (!user) {
         response.statusCode = 401
         return response.end(stringify({error: "unauthorized API request"}))
       }
     }
-    let body = await receive(request)
-    try { body = parse(body) } catch {}
-    response.end(stringify(await handleRoute(body)))
+    const data = extractData(await receive(request), querystring)
+    response.end(stringify(await (handler(data, user, method, url))))
   } catch (err) {
     c(err)
     response.statusCode = 400
     response.end(stringify({error: "unable to handle this API request"}))
   }
 }
+
 
 function receive(request, parts = []) {
   return new Promise((resolve, reject) => request
@@ -35,12 +42,27 @@ function receive(request, parts = []) {
     .on('error', reject))
 }
 
-/*
+function extractData(__raw, querystring) {
+  let __value, type
+  try {
+    type = typeof (__value = parse(__raw))
+    if (type == 'object' && Array.isArray(__value)) type = 'array'
+  } catch {}
+  const decoded = decode(querystring)
+  return type=='array' ? assign(__value, decoded, {__raw})
+    : assign(decoded, type=='object' ? __value : {__value}, {__raw})
+}
 
-Находим обработчик для апи
-Если он защищённый, проверяем право на доступ (checkAccess)
-Получаем резолюцию
-Если получена резолюция,
-
-
-*/
+function findHandler(module, method) {
+  if (typeof module == 'function')
+    return {handler: module, access: secure && 'admin'}
+  if (typeof module == 'object') {
+    const found = module[method] || module[method.toLowerCase()]
+      || module.any || module.all
+    if (typeof found == 'function')
+      return {handler: found, access: module.access || secure && 'admin'}
+    if (typeof found == 'object')
+      return {handler: found.handler, access: found.access || module.access
+        || secure && 'admin'}
+  }
+}

@@ -6,23 +6,18 @@ module.exports = checkAuth
 
 
 async function checkAuth(request, response) {
-  let {cookie=''} = request.headers
+  let {cookie} = request.headers
   cookie = parse(cookie)
   c(cookie)
   console.log(cookie)
-  const resolution = trivialCheck(cookie)
-  if (!resolution) return
-  cookie = `key=${resolution}; Max-Age=${maxAge}`
-  if (!dev) cookie = `__Secure-${cookie}; Path=/; Secure; HttpOnly; SameSite=Strict`
+  if (cookie.key != key) return
+  cookie = `key=${key}; Max-Age=${maxAge}; Path=/`
+  if (!dev) cookie = `__Secure-${cookie}; Secure; HttpOnly; SameSite=Strict`
   response.setHeader('set-cookie', cookie)
-  return true
+  return 'admin'
 }
 
 function parse(cookie) {
   return cookie && Object.fromEntries(cookie.split('; ')
     .map(pair => pair.split('='))) || {}
-}
-
-function trivialCheck(cookie) {
-  return cookie.key == key ? key : false
 }
