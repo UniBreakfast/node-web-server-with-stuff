@@ -2,6 +2,7 @@ const {decode} = require('querystring')
 const {stringify, parse} = JSON,  {assign} = Object
 
 const {server: {dev, secure}, up2, c} = require('.')
+const apiHandlers = dev ? null : require('./apiEnlist.cjs')
 if (dev) require = up2(require)
 const checkAuth = require('./authChecker.cjs', dev)
 
@@ -14,8 +15,9 @@ async function handleAPI(request, response) {
   try {
     const {method, url} = request
     const [path_api, querystring] = url.split('?')
-    const {handler, access} =
-      findHandler(require(`.${path_api}.cjs`, dev), method)
+    const {handler, access} = dev ?
+      findHandler(require(`.${path_api}.cjs`, dev), method) :
+        apiHandlers[path_api][method] || apiHandlers[path_api].ANY
     if (!handler) throw 'unable to handle this request method'
     let user = 'guest'
     if (access != 'guest') {
@@ -58,11 +60,10 @@ function findHandler(module, method) {
     return {handler: module, access: secure && 'admin'}
   if (typeof module == 'object') {
     const found = module[method] || module[method.toLowerCase()]
-      || module.any || module.all
-    if (typeof found == 'function')
-      return {handler: found, access: module.access || secure && 'admin'}
-    if (typeof found == 'object')
-      return {handler: found.handler, access: found.access || module.access
-        || secure && 'admin'}
+      || module.ANY || module.any
+    if (typeof found == 'function')  return {handler: found,
+        access: module.access || secure && 'admin' || 'guest'}
+    if (typeof found == 'object')  return {handler: found.handler,
+        access: found.access || module.access || secure && 'admin' || 'guest'}
   }
 }

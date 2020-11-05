@@ -10,7 +10,7 @@ module.exports = {
     ]
   },
   post: {
-    access: 'guest',
+    access: 'admin',
     handler(data, user, method, url) {
       return [
         {
