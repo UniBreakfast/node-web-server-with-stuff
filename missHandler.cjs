@@ -4,7 +4,6 @@ module.exports = handleMiss
 async function handleMiss(request, response) {
   const {method, url} = request
   const html = buildHTML(method, url)
-
   response.writeHead(404, {"content-type": "text/html"}).end(html)
 }
 
@@ -22,6 +21,7 @@ function buildHTML(method, url) {
     </body>
   `
 }
+
 
 const style = /* css */ `
       * {
@@ -54,7 +54,6 @@ const style = /* css */ `
         font-size: 2.5vw;
         opacity: 0.8;
         animation: focus-small 5s linear infinite alternate
-
       }
       .problem {
         text-align: center;

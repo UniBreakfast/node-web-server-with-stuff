@@ -1,8 +1,6 @@
-const {assign, keys, fromEntries } = Object
+const {assign, fromEntries } = Object
 const { readdir } = require('fs/promises')
-
 const { server: {apis, secure}, c} = require('.')
-
 const apiHandlers = {}
 
 
@@ -11,7 +9,6 @@ module.exports = apiHandlers
 
 apis.forEach(path => searchAPI('.'+path.slice(0, -1)))
 
-setTimeout(() => c(apiHandlers), 1000)
 
 function searchAPI(path) {
   readdir(path).then(list => list.map(name => path+'/'+name).forEach(path =>

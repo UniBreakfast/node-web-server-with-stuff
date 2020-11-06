@@ -33,8 +33,7 @@ async function handleRequest(request, response) {
     }
     return handleMiss(request, response)
   }
-  response.statusCode = 400
-  response.end('"unexpected request method and/or URL"')
+  response.writeHead(400).end('"unexpected request method and/or URL"')
 }
 
 async function check(path) {

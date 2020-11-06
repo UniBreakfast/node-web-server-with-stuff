@@ -4,6 +4,5 @@ node_modules
 lonerun.cjs
 public
 dev
-# api
-# data
+api
 .favorites.json

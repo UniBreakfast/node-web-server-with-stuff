@@ -1,10 +1,10 @@
 const {decode} = require('querystring')
 const {stringify, parse} = JSON,  {assign} = Object
-
-const {server: {dev, secure}, up2, c} = require('.')
+const {server: {dev, secure, checks, given}, digest, cook, up2, c}
+  = require('.')
 const apiHandlers = dev ? null : require('./apiEnlist.cjs')
 if (dev) require = up2(require)
-const checkAuth = require('./authChecker.cjs', dev)
+const key = process.env.ADMIN_KEY
 
 
 module.exports = handleAPI
@@ -21,18 +21,18 @@ async function handleAPI(request, response) {
     if (!handler) throw 'unable to handle this request method'
     let user = 'guest'
     if (access != 'guest') {
-      user = await checkAuth(request, response, access)
-      if (!user) {
-        response.statusCode = 401
-        return response.end(stringify({error: "unauthorized API request"}))
-      }
+      user = await (checks[access] || checkTheKey)(request, response, access)
+      if (!user) return response.writeHead(401)
+        .end(stringify({error: "unauthorized API request"}))
     }
     const data = extractData(await receive(request), querystring)
-    response.end(stringify(await (handler(data, user, method, url))))
+    let answer = await (handler({data, user, method, url}, given))
+    if (response.also) answer = response.also(answer) || answer
+    response.end(stringify(answer))
   } catch (err) {
-    c(err)
-    response.statusCode = 400
-    response.end(stringify({error: "unable to handle this API request"}))
+    if (err.code != 'MODULE_NOT_FOUND') c(err)
+    response.writeHead(400)
+      .end(stringify({error: "unable to handle this API request"}))
   }
 }
 
@@ -66,4 +66,10 @@ function findHandler(module, method) {
     if (typeof found == 'object')  return {handler: found.handler,
         access: found.access || module.access || secure && 'admin' || 'guest'}
   }
+}
+
+function checkTheKey(request, response) {
+  if (digest(request.headers.cookie).key != key) return
+  response.setHeader('set-cookie', cook('key', key, !dev, 1800))
+  return 'admin'
 }
