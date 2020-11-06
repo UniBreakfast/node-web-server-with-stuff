@@ -4,7 +4,7 @@ const {server: {dev, secure, checks, given}, digest, cook, up2, c}
   = require('.')
 const apiHandlers = dev ? null : require('./apiEnlist.cjs')
 if (dev) require = up2(require)
-const key = process.env.ADMIN_KEY
+const key = process.env.ADMIN_KEY || 'ADMIN_KEY'
 
 
 module.exports = handleAPI
@@ -21,7 +21,7 @@ async function handleAPI(request, response) {
     if (!handler) throw 'unable to handle this request method'
     let user = 'guest'
     if (access != 'guest') {
-      user = await (checks[access] || checkTheKey)(request, response, access)
+      user = await (checks[access] || checkTheKey)(request, response, given)
       if (!user) return response.writeHead(401)
         .end(stringify({error: "unauthorized API request"}))
     }
@@ -31,8 +31,8 @@ async function handleAPI(request, response) {
     response.end(stringify(answer))
   } catch (err) {
     if (err.code != 'MODULE_NOT_FOUND') c(err)
-    response.writeHead(400)
-      .end(stringify({error: "unable to handle this API request"}))
+    response.writeHead(400).end(typeof err == 'string' ? err
+      : stringify({error: "unable to handle this API request"}))
   }
 }
 
@@ -44,15 +44,16 @@ function receive(request, parts = []) {
     .on('error', reject))
 }
 
-function extractData(__raw, querystring) {
+function extractData(__raw, __querystring) {
   let __value, type
   try {
     type = typeof (__value = parse(__raw))
     if (type == 'object' && Array.isArray(__value)) type = 'array'
   } catch {}
-  const decoded = decode(querystring)
-  return type=='array' ? assign(__value, decoded, {__raw})
-    : assign(decoded, type=='object' ? __value : {__value}, {__raw})
+  const decoded = decode(__querystring)
+  const raws = {__raw, __querystring}
+  return type=='array' ? assign(__value, decoded, raws)
+    : assign(decoded, type=='object' ? __value : {__value}, raws)
 }
 
 function findHandler(module, method) {
