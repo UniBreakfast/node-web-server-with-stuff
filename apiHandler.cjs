@@ -1,5 +1,5 @@
 const {decode} = require('querystring')
-const {stringify, parse} = JSON,  {assign} = Object
+const {stringify, parse} = JSON,  {assign, setPrototypeOf} = Object
 const {server: {dev, secure, checks, given}, digest, cook, up2, c}
   = require('.')
 const apiHandlers = dev ? null : require('./apiEnlist.cjs')
@@ -44,16 +44,16 @@ function receive(request, parts = []) {
     .on('error', reject))
 }
 
-function extractData(__raw, __querystring) {
-  let __value, type
+function extractData(_raw, _querystring) {
+  let _value, type
   try {
-    type = typeof (__value = parse(__raw))
-    if (type == 'object' && Array.isArray(__value)) type = 'array'
+    type = typeof (_value = parse(_raw))
+    if (type == 'object' && Array.isArray(_value)) type = 'array'
   } catch {}
-  const decoded = decode(__querystring)
-  const raws = {__raw, __querystring}
-  return type=='array' ? assign(__value, decoded, raws)
-    : assign(decoded, type=='object' ? __value : {__value}, raws)
+  const decoded = decode(_querystring)
+  const raws = {_raw, _querystring}
+  return type=='array' ? assign(_value, decoded, raws)
+    : setPrototypeOf(assign(decoded, type=='object' ? _value : {_value}), raws)
 }
 
 function findHandler(module, method) {
