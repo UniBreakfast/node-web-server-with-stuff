@@ -34,8 +34,8 @@ We can also configure the APIs. Here is an elaborate example. It provides additi
 process.env.ADMIN_KEY = '5UPP3Rpassw0rd' // you would do this in a separate .gitignore-d file
 const {server, digest, cook} = require('node-web-server-with-stuff')
 const checks = {
-  user(request, response) {/* ... */}
-  moderator(request, response) {/* ... */}
+  user(request, response, given) {/* ... */}
+  moderator(request, response, given) {/* ... */}
 }
 const {validateFn, rules, anything} = require('./your/modules.js')
 const conn = db.connect(/* credentials */) // your database of choice connection here
@@ -60,14 +60,15 @@ module.exports = {
     // get notes via the connection and simply return them
   }},
   POST: {access: 'user', handler({data, user}, {conn, validateFn, rules}) {
-    // this one will use the checks.user(request, response) to check if user is recognised
-    // and it can for example get, validate and save new notes for him
-    // or throw - needs to throw JSON string to send it to the client
+    // this one will use the checks.user(request, response, given) to check
+    // if user is recognised and it can for example get, validate and save
+    // new notes for him or throw - needs to throw JSON string to send it
+    // to the client
   }},
   DELETE: {access: 'moderator', handler({data, user}, {conn}) {
-    // this one will use the checks.moderator(request, response) to check user
-    // and it can for example delete some notes
+    // this one will use the checks.moderator(request, response, given) to
+    // check user and it can for example delete some notes
   }}
 }
 ```
-In these examples `data` is the cumulative object from the request body and request URL querystring (both parsed and not), `user` is for example an id, login or name of the user confirmed (returned) by the used `checks.method()`
+In these examples `data` is the cumulative object from the request body and request URL querystring (both parsed and not), `user` is for example an id, login or name of the user confirmed (returned) by the used `checks.method()`.
