@@ -46,7 +46,7 @@ server.run(options)
 And then in the `/data` (or `/secret_api`) folder could be like for an example a `notes.js` (or `notes.cjs`) file (those API-handlers can also be deep in the sufolders) and in such file would be
 ```js
 //                         requestProps               given
-module.exports = function ({data, user, method, url}, {conn, validateFn, rules, anything}) {
+module.exports = function ({data, invoice, method, url}, {conn, validateFn, rules, anything}) {
   // and here would be the function body, and it's supposed to simply
   // return what should be sent to the client by this API-endpoint
 }
@@ -59,16 +59,16 @@ module.exports = {
     // this one will require no credentials whatsoever
     // get notes via the connection and simply return them
   }},
-  POST: {access: 'user', handler({data, user}, {conn, validateFn, rules}) {
+  POST: {access: 'user', handler({data, invoice}, {conn, validateFn, rules}) {
     // this one will use the checks.user(request, response, given) to check
     // if user is recognised and it can for example get, validate and save
     // new notes for him or throw - needs to throw JSON string to send it
     // to the client
   }},
-  DELETE: {access: 'moderator', handler({data, user}, {conn}) {
+  DELETE: {access: 'moderator', handler({data, invoice}, {conn}) {
     // this one will use the checks.moderator(request, response, given) to
     // check user and it can for example delete some notes
   }}
 }
 ```
-In these examples `data` is the cumulative object from the request body and request URL querystring (both parsed and not), `user` is for example an id, login or name of the user confirmed (returned) by the used `checks.method()`.
+In these examples `data` is the cumulative object from the request body and request URL querystring (both parsed and not), `invoice` is for example an id, login or name of the user confirmed (returned) by the used `checks.method()` or any other internal information corresponding to the successful access check.

@@ -19,14 +19,14 @@ async function handleAPI(request, response) {
       findHandler(require(`.${path_api}.cjs`, dev), method) :
         apiHandlers[path_api][method] || apiHandlers[path_api].ANY
     if (!handler) throw 'unable to handle this request method'
-    let user = 'guest'
     if (access != 'guest') {
-      user = await (checks[access] || checkTheKey)(request, response, given)
-      if (!user) return response.writeHead(401)
+      var invoice =
+        await (checks[access] || checkTheKey)(request, response, given)
+      if (!invoice) return response.writeHead(401)
         .end(stringify({error: "unauthorized API request"}))
     }
     const data = extractData(await receive(request), querystring)
-    let answer = await (handler({data, user, method, url}, given))
+    let answer = await (handler({data, invoice, method, url}, given))
     if (response.also) answer = response.also(answer) || answer
     response.end(stringify(answer))
   } catch (err) {
