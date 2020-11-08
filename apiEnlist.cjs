@@ -7,17 +7,17 @@ const apiHandlers = {}
 module.exports = apiHandlers
 
 
-apis.forEach(path => searchAPI('.'+path.slice(0, -1)))
+apis.forEach(path => searchAPI(path.slice(0, -1)))
 
 
 function searchAPI(path) {
-  readdir(path).then(list => list.map(name => path+'/'+name).forEach(path =>
-    path.match(/\.c?js$/) ? assign(apiHandlers, extractHandlers(path))
-      : searchAPI(path))).catch(c)
+  readdir(process.cwd()+path).then(list => list.map(name => path+'/'+name)
+    .forEach(path => path.match(/\.c?js$/)
+      ? assign(apiHandlers, extractHandlers(path)) : searchAPI(path))).catch(c)
 }
 
 function extractHandlers(path) {
-  let module = require(path)
+  let module = require(process.cwd()+path)
   path = path.replace(/^\.|\.c?js$/g, '')
   if (typeof module == 'function') module = {any: module}
   const methods = []

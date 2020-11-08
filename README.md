@@ -13,7 +13,7 @@ Most basic setup-and-run would be
 ```js
 require('node-web-server-with-stuff').server.run()
 ```
-In this case it will run with default settings: port 3000 locally and whichever Heroku provides for it up there, dev-mode locally and prod-mode up there, `/public/` folder for pages supposed to be present in the project root directory and it's better be having at least an `index.html`, `/api/` folder for various API handlers supposed to be preset at the root too, but it's not the end of the world if it isn't there. By default api endpoints are secured by one system-level variable ADMIN_KEY, so you may want to set it in Settings tab on Heroku. If none set the key value defaults to its name "ADMIN_KEY".
+In this case it will run with default settings: port 3000 locally and whichever Heroku provides for it up there, dev-mode locally and prod-mode up there, `/public/` folder for pages supposed to be present in the project root directory and it's better be having at least an `index.html`, `/api/` folder for various API handlers supposed to be present at the root too, but it's not the end of the world if it isn't there. By default api endpoints are secured by one system-level variable ADMIN_KEY, so you may want to set it in Settings tab on Heroku. If none set the key value defaults to its name "ADMIN_KEY".
 
 But imported module also can provide some helper functions and/or handle an options object.
 
@@ -34,7 +34,7 @@ We can also configure the APIs. Here is an elaborate example. It provides additi
 process.env.ADMIN_KEY = '5UPP3Rpassw0rd' // you would do this in a separate .gitignore-d file
 const {server, digest, cook} = require('node-web-server-with-stuff')
 const checks = {
-  user(request, response, given) {/* ... */}
+  user(request, response, given) {/* you may use digest/cook for cookies here */}
   moderator(request, response, given) {/* ... */}
 }
 const {validateFn, rules, anything} = require('./your/modules.js')

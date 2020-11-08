@@ -1,4 +1,5 @@
 const {decode} = require('querystring')
+const {stat} = require('fs/promises')
 const {stringify, parse} = JSON,  {assign, setPrototypeOf} = Object
 const {server: {dev, secure, checks, given}, digest, cook, up2, c}
   = require('.')
@@ -15,9 +16,8 @@ async function handleAPI(request, response) {
   try {
     const {method, url} = request
     const [path_api, querystring] = url.split('?')
-    const {handler, access} = dev ?
-      findHandler(require(`.${path_api}.cjs`, dev), method) :
-        apiHandlers[path_api][method] || apiHandlers[path_api].ANY
+    const {handler, access} = dev ? await findHandler(path_api, method)
+      : apiHandlers[path_api][method] || apiHandlers[path_api].ANY
     if (!handler) throw 'unable to handle this request method'
     if (access != 'guest') {
       var invoice =
@@ -56,9 +56,13 @@ function extractData(_raw, _querystring) {
     : setPrototypeOf(assign(decoded, type=='object' ? _value : {_value}), raws)
 }
 
-function findHandler(module, method) {
+async function findHandler(path_api, method) {
+  let path = process.cwd() + path_api
+  if (await stat(path+'.js').catch(err => null)) path+='.js'
+  else if (await stat(path+'.cjs')) path+='.cjs'
+  const module = require(path, dev)
   if (typeof module == 'function')
-    return {handler: module, access: secure && 'admin'}
+    return {handler: module, access: secure && 'admin' || 'guest'}
   if (typeof module == 'object') {
     const found = module[method] || module[method.toLowerCase()]
       || module.ANY || module.any
