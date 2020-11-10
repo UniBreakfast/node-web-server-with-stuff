@@ -14,18 +14,21 @@ module.exports = handleAPI
 async function handleAPI(request, response) {
   response.setHeader('content-type', 'application/json; charset=utf-8')
   try {
+    let data
+    const getData = async () => data !== undefined ? data
+      : (data = extractData(await receive(request), querystring))
     const {method, url} = request
     const [path_api, querystring] = url.split('?')
     const {handler, access} = dev ? await findHandler(path_api, method)
       : apiHandlers[path_api][method] || apiHandlers[path_api].ANY
     if (!handler) throw 'unable to handle this request method'
     if (access != 'guest') {
-      var invoice =
-        await (checks[access] || checkTheKey)(request, response, given)
+      const check = checks[access] || checkTheKey
+      var invoice = await check(request, response, {...given, getData})
       if (!invoice) return response.writeHead(401)
         .end(stringify({error: "unauthorized API request"}))
     }
-    const data = extractData(await receive(request), querystring)
+    data = await getData()
     let answer = await (handler({data, invoice, method, url}, given))
     if (response.also) answer = response.also(answer) || answer
     response.end(stringify(answer))
