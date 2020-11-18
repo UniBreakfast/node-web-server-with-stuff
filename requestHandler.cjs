@@ -4,8 +4,7 @@ if (dev) require = up2(require)
 const handleAPI = require('./apiHandler.cjs', dev)
 const handleMiss = require('./missHandler.cjs', dev)
 
-const {createReadStream, promises: {stat}} = require('fs')
-const typeDict = require('./types')
+const {stat} = require('fs/promises')
 
 
 module.exports = handleRequest
@@ -22,18 +21,18 @@ async function handleRequest(request, response) {
     if (url == '/') url += 'index.html'
     let path = public + url.replace(/\/$/, '')
     const found = await check(path)
-    if (found == 'file') return giveFile(path, response)
+    if (found == 'file') return response.path = path
     if (found == 'folder') {
       path += '/index.html'
-      if (await check(path) == 'file') return giveFile(path, response)
+      if (await check(path) == 'file') return response.path = path
     }
     if (path.match(/\/[^.]*$/)) {
       path += '.html'
-      if (await check(path) == 'file') return giveFile(path, response)
+      if (await check(path) == 'file') return response.path = path
     }
     return handleMiss(request, response)
   }
-  response.writeHead(400).end('"unexpected request method and/or URL"')
+  response.send('"unexpected request method and/or URL"', 400)
 }
 
 async function check(path) {
@@ -43,11 +42,5 @@ async function check(path) {
   } catch { return }
 }
 
-function giveFile(path, response) {
-  const extMatch = path.match(/\.([^\/]*)$/)
-  const type = typeDict[extMatch ? extMatch[1] : 'html']
-  if (type) response.setHeader('content-type', type)
-  createReadStream(path).pipe(response)
-}
 
 function treatIfSpecial(request, response) {}

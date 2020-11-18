@@ -3,8 +3,7 @@ module.exports = handleMiss
 
 async function handleMiss(request, response) {
   const {method, url} = request
-  const html = buildHTML(method, url)
-  response.writeHead(404, {"content-type": "text/html"}).end(html)
+  response.send(buildHTML(method, url), 404, "html")
 }
 
 

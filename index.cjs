@@ -1,14 +1,15 @@
 const {assign} = Object
-const {createServer} = require('http')
 const c = require('c4console')
 const up2 = require('up2require')
+const httpity = require('httpity')
 
 
-module.exports = {server: {run}, digest, cook, up2, c}
+module.exports = {server: {run}, up2, c}
 
 
 function run(options={}) {
   const dev = typeof options.dev == 'boolean' ? options.dev : !process.env.PORT
+  httpity.secure = !dev
   const props = { dev,
     port: !dev ? process.env.PORT || options.port
       : typeof options.port == 'number' ? options.port : 3000,
@@ -23,7 +24,7 @@ function run(options={}) {
 
   if (dev) require = up2(require)
   const handleRequest = require('./requestHandler.cjs', dev)
-  const server = assign(createServer(handleRequest), props)
+  const server = assign(httpity.createServer(handleRequest), props)
 
   server.on('error', err =>
     err.code=='EADDRINUSE' ? start(server, server.port = ++this.port) : c(err))
@@ -48,15 +49,4 @@ function reportStart(dev, port) {
 
 function normalize(path) {
   return `/${path.replace(/^[/\\]*|[/\\]*$/g, '')}/`
-}
-
-function cook(name, value, secure, expire=86400*3, path='/') {
-  const cookie = `${name}=${value}; Max-Age=${expire}; Path=${path}`
-  return secure ?
-    `__Secure-${cookie}; Secure; HttpOnly; SameSite=Strict` : cookie
-}
-
-function digest(cookie) {
-  return cookie && Object.fromEntries(cookie.split('; ')
-    .map(pair => pair.split('='))) || {}
 }
