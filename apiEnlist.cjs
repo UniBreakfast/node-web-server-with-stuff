@@ -12,12 +12,14 @@ if (accessors) {
     .then(list => list.map(name => path+'/'+name)
       .forEach(path => path.match(/\.c?js$/) ? grabCheck(path)
         : searchChecks(path))).catch(c)
+
   const grabCheck = path => {
     const check = require(process.cwd()+path)
     if (typeof check == 'function')
       checks[path.replace(/^.[^/\\]+.|\.c?js$/g, '')] = check
   }
-  searchChecks('/'+accessors)
+
+  searchChecks(accessors.slice(0, -1))
 }
 
 

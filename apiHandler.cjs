@@ -51,7 +51,7 @@ async function findHandler(method, path) {
 }
 
 function findCheck(access) {
-  return findModule(`/${accessors}/${access}`)
+  return findModule(accessors + access)
 }
 
 async function findModule(path) {

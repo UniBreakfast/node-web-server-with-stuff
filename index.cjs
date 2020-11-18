@@ -18,7 +18,7 @@ function run(options={}) {
     public: options.public || process.cwd() + '/public',
     apis: (options.api ? Array.isArray(options.api) ? options.api
       : [options.api] : ['api']).map(normalize),
-    accessors: secure ? options.accessors || 'access' : '',
+    accessors: secure ? normalize(options.accessors) || '/access/' : '',
     checks: options.checks || {},
     given: options.given || {}
   }
@@ -50,5 +50,5 @@ function reportStart(dev, port) {
 }
 
 function normalize(path) {
-  return `/${path.replace(/^[/\\]*|[/\\]*$/g, '')}/`
+  return path && `/${path.replace(/^[/\\]*|[/\\]*$/g, '')}/`
 }
