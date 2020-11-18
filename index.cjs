@@ -9,14 +9,16 @@ module.exports = {server: {run}, up2, c}
 
 function run(options={}) {
   const dev = typeof options.dev == 'boolean' ? options.dev : !process.env.PORT
-  httpity.secure = !dev
-  const props = { dev,
-    port: !dev ? process.env.PORT || options.port
-      : typeof options.port == 'number' ? options.port : 3000,
+  const secure = typeof options.secure == 'boolean' ? options.secure : true
+  httpity.secure =
+    options.secureCookie === undefined ? !dev : options.secureCookie
+  const props = { dev, secure,
+    port: (!dev ? process.env.PORT || options.port
+      : typeof options.port == 'number' && options.port) || 3000,
     public: options.public || process.cwd() + '/public',
     apis: (options.api ? Array.isArray(options.api) ? options.api
       : [options.api] : ['api']).map(normalize),
-    secure: typeof options.secure == 'boolean' ? options.secure : true,
+    accessors: secure ? options.accessors || 'access' : '',
     checks: options.checks || {},
     given: options.given || {}
   }
