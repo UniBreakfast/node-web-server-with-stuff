@@ -4,7 +4,7 @@ if (dev) require = up2(require)
 const handleAPI = require('./apiHandler.cjs', dev)
 const handleMiss = require('./missHandler.cjs', dev)
 
-const {stat} = require('fs/promises')
+const {stat} = require('fs').promises
 
 
 module.exports = handleRequest

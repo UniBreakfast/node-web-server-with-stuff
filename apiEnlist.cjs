@@ -1,5 +1,5 @@
 const {assign, fromEntries } = Object
-const { readdir } = require('fs/promises')
+const { readdir } = require('fs').promises
 const { server: {apis, secure, accessors}, c} = require('.')
 const checks = {}, apiHandlers = {}
 

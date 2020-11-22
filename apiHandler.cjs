@@ -1,4 +1,4 @@
-const {stat} = require('fs/promises')
+const {stat} = require('fs').promises
 const {server: {dev, apis, secure, accessors, given}, up2, c} = require('.')
 const {checks={}, apiHandlers={}} = dev || !apis.length && !accessors ? {}
   : require('./apiEnlist.cjs')
