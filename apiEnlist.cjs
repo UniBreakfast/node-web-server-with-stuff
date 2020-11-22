@@ -26,7 +26,7 @@ if (accessors) {
 apis.forEach(path => searchAPI(path.slice(0, -1)))
 
 
-function searchAPI(path) {
+function searchAPI(path) { c('searchAPI')
   readdir(process.cwd()+path).then(list => list.map(name => path+'/'+name)
     .forEach(path => path.match(/\.c?js$/)
       ? assign(apiHandlers, extractHandlers(path)) : searchAPI(path))).catch(c)

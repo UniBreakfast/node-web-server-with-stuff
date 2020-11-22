@@ -10,7 +10,7 @@ const {stat} = require('fs/promises')
 module.exports = handleRequest
 
 
-async function handleRequest(request, response) {
+async function handleRequest(request, response) { c('handleRequest')
   let {method, url} = request
 
   if (apis.some(api => url.startsWith(api) && url.length > api.length))    return handleAPI(request, response)

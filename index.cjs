@@ -7,7 +7,7 @@ const httpity = require('httpity')
 module.exports = {server: {run}, up2, c}
 
 
-function run(options={}) {
+function run(options={}) { c('run')
   const dev = typeof options.dev == 'boolean' ? options.dev : !process.env.PORT
   const secure = typeof options.secure == 'boolean' ? options.secure : true
   httpity.secure =
