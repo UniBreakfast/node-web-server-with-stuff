@@ -9,7 +9,7 @@ const key = process.env.ADMIN_KEY || 'ADMIN_KEY'
 module.exports = handleAPI
 
 
-async function handleAPI(request, response) { c('handleAPI')
+async function handleAPI(request, response) {
   const req = request,  resp = response
   response.type = 'json'
   try {

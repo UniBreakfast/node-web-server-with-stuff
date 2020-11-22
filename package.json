@@ -1,12 +1,12 @@
 {
   "name": "node-web-server-with-stuff",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "It's just that - a vanilla web server with some of my modules with no thirdparty modules. Yet. It provides an uniform way of server development for serving files and API-endpoints both.",
   "type": "commonjs",
   "main": "index.cjs",
   "dependencies": {
     "c4console": "^1.0.9",
-    "httpity": "^1.0.3",
+    "httpity": "^1.0.4",
     "up2require": "^1.3.0"
   },
   "scripts": {
