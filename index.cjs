@@ -20,7 +20,7 @@ function run(options={}) {
       : [options.api] : ['api']).map(normalize),
     accessors: secure ? normalize(options.accessors) || '/access/' : '',
     checks: options.checks || {},
-    given: options.given || {}
+    given: awaitProps(options.given)
   }
   assign(this, props)
 
@@ -51,4 +51,13 @@ function reportStart(dev, port) {
 
 function normalize(path) {
   return path && `/${path.replace(/^[/\\]*|[/\\]*$/g, '')}/`
+}
+
+function awaitProps(obj={}) {
+  for (const key in obj) {
+    const value = obj[key]
+    if (value instanceof Promise)
+      value.then(value => obj[key] = value).catch(c)
+  }
+  return obj
 }
