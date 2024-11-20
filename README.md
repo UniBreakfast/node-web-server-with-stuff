@@ -1,6 +1,6 @@
 # node-web-server-with-stuff
 
-This is a vanilla JS web server made with the nodeJS buit-in http module. It also includes a couple of modules I wrote to make my life easier ([httpity](https://www.npmjs.com/package/httpity), [`up2require`](https://www.npmjs.com/package/up2require) and [`c4console`](https://www.npmjs.com/package/c4console)). I made this module with my personal learning/development process in mind. Got used to use Heroku, so it's ready for the heroku deploy (respects its env.PORT by default). It also by default will run in production mode on it and in dev mode locally.
+This is a vanilla JS web server made with the nodeJS buit-in http module. It also includes a couple of modules I wrote to make my life easier ([ httpity ](https://www.npmjs.com/package/httpity), [`up2require`](https://www.npmjs.com/package/up2require) and [`c4console`](https://www.npmjs.com/package/c4console)). I made this module with my personal learning/development process in mind. Got used to use Heroku, so it's ready for the heroku deploy (respects its env.PORT by default). It also by default will run in production mode on it and in dev mode locally.
 
 ## Installation
 ```
