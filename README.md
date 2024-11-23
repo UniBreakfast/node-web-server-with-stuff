@@ -5,7 +5,7 @@ A simple and customizable Node.js web server built with the built-in `http` modu
 ## Features
 
 - **Vanilla Node.js**: Uses Node.js's built-in `http` module, no external web frameworks.
-- **Hot Module Reloading**: Automatically reload modules during development without restarting the server, using [`up2require`](https://www.npmjs.com/package/up2require).
+- **Hot Module Reloading**: Automatically reloads modules during development without restarting the server, using [`up2require`](https://www.npmjs.com/package/up2require).
 - **Custom Utilities**: Includes helper modules for common tasks:
   - [`httpity`](https://www.npmjs.com/package/httpity): Simplifies HTTP request and response handling.
   - [`up2require`](https://www.npmjs.com/package/up2require): Enhances `require` for hot reloading.
@@ -38,9 +38,9 @@ This will:
 
 - Start the server on port `3000` locally or use the `PORT` environment variable (useful for deployment platforms).
 - Serve static files from the `/public` directory in the project root.
-- Serve index.html if a request is made to the root URL.
-- Serve html files if a request is made to a path that doesn't have an extension.
-- Serve 404 page if a request is made to a non-existent file. 
+- Serve `index.html` if a request is made to the root URL.
+- Serve `.html` files if a request is made to a path that doesn't have an extension.
+- Serve a 404 page if a request is made to a non-existent file.
 - Look for API handlers in the `/api` directory.
 - Run in development mode locally and production mode on deployment platforms.
 - Automatically hot reload API handlers during development without restarting the server.
@@ -77,18 +77,18 @@ server.run(options);
 
 ## Static File Serving
 
-The server serves static files from the `publicPath` directory and those in subdirectories. When a request is made to a URL, the server looks for a corresponding file there.
+The server serves static files from the `publicPath` directory and its subdirectories. When a request is made to a URL, the server looks for a corresponding file there.
 
 For example, with `publicPath` set to `/public`, a request to `/about/page` (without extension specified) will look for:
 
-- `/public/about/page/index.html`.
-- If no folder named `page` exists in `/public/about/`, it will look for file with name `page` there, without extension.
-- If no file named `page` exists in `/public/about/`, it will look for `page.html`.
-- If there's no file named `page.html` either, it will serve the 404 page.
+1. `/public/about/page/index.html`.
+2. If no folder named `page` exists in `/public/about/`, it will look for a file named `page` in that directory, without an extension.
+3. If no file named `page` exists in `/public/about/`, it will look for `page.html`.
+4. If there's no file named `page.html` either, it will serve the 404 page.
 
 ## API Handlers
 
-API handlers are modules that process incoming API requests. Place your API handler modules in one or more directories specified by the `api` option (default one is `/api`).
+API handlers are modules that process incoming API requests. Place your API handler modules in one or more directories specified by the `api` option (default is `/api`).
 
 ### Endpoint Mapping
 
@@ -107,11 +107,11 @@ module.exports = async function ({ request, response, granted, conn, validateFn,
   const data = await request.data; // Parsed request body and query parameters
   // ... perform operations ...
   return { success: true, data: /* ... */ };
-  // returned data can be any JSON-serializable object
+  // Returned data can be any JSON-serializable object
 };
 ```
 
-**NOTE**: Here and everywhere in this documentation `req` and `resp` are available aliases for `request` and `response` respectively, so they can be destructured under those names if preferred. 
+**Note**: Throughout this documentation, `req` and `resp` are available aliases for `request` and `response` respectively, so they can be destructured under those names if preferred.
 
 ### Handler Parameters
 
@@ -119,32 +119,30 @@ module.exports = async function ({ request, response, granted, conn, validateFn,
 - `response`: Enhanced HTTP response object provided by `httpity`.
 - `granted`: Result from the access control function (if access control is enabled).
 - `conn`, `validateFn`, `rules`, etc.: Custom objects passed via the `given` option.
+- `...rest`: Any additional objects passed via the `given` option.
 
 ### Handling Different HTTP Methods
 
-You can define handlers for specific HTTP methods. In that case, instead of a single function, you export an object with sub-objects for each HTTP method, specifying the access level and the handler function:
+You can define handlers for specific HTTP methods. Instead of exporting a single function, export an object with sub-objects for each HTTP method, specifying the access level and the handler function:
 
 ```javascript
 // /api/notes.js or /api/notes.cjs or similar
 
 module.exports = {
   GET: {
-    access: 'guest', // full access
+    access: 'guest', // Full access
     handler: async function ({ request, response, ...rest }) {
       // Handle GET requests
     },
   },
   POST: {
-    // user access provided by the /access/user.js function
-    access: 'user', 
+    access: 'user', // Requires the /access/user.js function
     handler: async function ({ request, response, granted, ...rest }) {
       // Handle POST requests with user access
     },
   },
   DELETE: {
-    // admin access provided by the /access/admin.js function
-    // or the master key from the `ADMIN_KEY` environment variable
-    access: 'admin',
+    access: 'admin', // Requires the /access/admin.js function or the ADMIN_KEY
     handler: async function ({ request, response, granted, ...rest }) {
       // Handle DELETE requests with admin access
     },
@@ -166,13 +164,13 @@ module.exports = {
   },
   DELETE: ({ request, response, ...rest }) => {
     // Handle DELETE requests
-  }
-}
+  },
+};
 ```
 
 ## Access Control
 
-When `secure` option is set to `true`, API endpoints require access checks before processing requests. Access control functions are placed in the directory specified by the `accessors` option (default is `/access`).
+When the `secure` option is set to `true`, API endpoints require access checks before processing requests. Access control functions are placed in the directory specified by the `accessors` option (default is `/access`).
 
 ### Default Access Control
 
@@ -181,7 +179,7 @@ Without custom accessors, the server uses a simple cookie-based access control:
 - The client must send a cookie named `key` with the value matching the `ADMIN_KEY` environment variable (customizable via an `.env` file).
 - This provides access levels other than `guest`.
 - Handlers with `access: 'guest'` are available without any access checks.
-- If key is incorrect or missing, the endpoint will respond with `unauthorized`.
+- If the key is incorrect or missing, the endpoint will respond with `unauthorized`.
 
 ### Access Levels
 
@@ -230,32 +228,33 @@ If `secure: true` and an API handler specifies an access level without a corresp
 
 The package provides additional helper modules to simplify development:
 
-### `up2require` 
+### `up2require`
 
-###### for Hot Module Reloading
+An alias for [`upgradeToUpdate`](https://www.npmjs.com/package/up2require) from the `up2require` module.
 
-An alias for [`upgradeToUpdate`](https://www.npmjs.com/package/up2require) from the `up2require` module. 
+During development, modules loaded using the upgraded `require` function from `up2require` will hot reload. You can add, change, or remove them at any time without restarting the server. This is especially useful for rapid development and testing.
 
-During development, modules loaded using the upgraded `require` function from `up2require` will hot reload. So you can add, change, or remove them at any time without restarting the server. This is especially useful for rapid development and testing.
+#### Enabling `up2require` in Development Mode
 
-To enable hot reloading for a module, pass `true` as the second argument to upgraded `require` function:
-
-### Enabling `up2require` in Development Mode
+Replace Node.js's `require` function with the upgraded one during development:
 
 ```javascript
 const { server, up2 } = require('node-web-server-with-stuff');
 
-if (server.dev) require = up2(require);
+if (server.dev) {
+  require = up2(require);
+}
 ```
 
-Then to enable hot reloading for a specific module use that upgraded `require` function:
+To enable hot reloading for a specific module, pass `true` as the second argument to the upgraded `require` function:
 
 ```javascript
 const myModule = require('./myModule', true);
 ```
 
-### c4console 
-###### for Functionally Transparent Chainable Logging )
+All API handlers are automatically hot-reloaded during development.
+
+### `c4console`
 
 An enhanced version of `console.log` from the [`c4console`](https://www.npmjs.com/package/c4console) module.
 
@@ -268,17 +267,17 @@ c('This is an enhanced console log message');
 But `c` can also be better used like this:
 
 ```javascript
-// no imports required to use as a method
+// No imports required to use as a method
 
-[1, 2, 3].map(x => x * 2).c('double').map(x => x * 3).c('triple');
+[1, 2, 3].map(x => x * 2).c('doubled').map(x => x * 3).c('tripled');
 
-/* will log: */
+/* Will log: */
 
 // doubled: (3) [2, 4, 6]
 // tripled: (3) [6, 12, 18]
 ```
 
-Note that the `c` method is inherited by any non-empty value from the `Object.prototype`, takes optional label argument, and returns the value it was called on, so it can be inserted into a chain of propery reads or function calls to see intermediate values without braking the chain logic.
+Note that the `c` method is inherited by any non-empty value from `Object.prototype`, takes an optional label argument, and returns the value it was called on. This allows it to be inserted into a chain of property reads or function calls to see intermediate values without breaking the chain logic.
 
 ## More Examples
 
