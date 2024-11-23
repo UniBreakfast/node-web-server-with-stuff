@@ -1,6 +1,6 @@
 {
   "name": "node-web-server-with-stuff",
-  "version": "1.4.9",
+  "version": "1.4.10",
   "description": "It's just that - a vanilla web server with some of my modules with no thirdparty modules. Yet. It provides an uniform way of server development for serving files and API-endpoints both.",
   "type": "commonjs",
   "main": "index.cjs",

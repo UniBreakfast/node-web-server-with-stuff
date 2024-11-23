@@ -50,11 +50,10 @@ async function handleAPI(request, response) {
   } catch (err) {
     if (err.code != 'MODULE_NOT_FOUND') c(err)
 
-    response.send(
-      typeof err == 'string' ?
-        err : { error: "unable to handle this API request" }, 
-      400
-    )
+    response.send({
+      error: typeof err == 'string' ?
+        err : "unable to handle this API request"
+    }, 400)
   }
 }
 
@@ -63,7 +62,7 @@ async function findHandler(method, path) {
 
   if (typeof module == 'function')
     return { handler: module, access: secure && 'admin' || 'guest' }
-  
+
   if (typeof module == 'object' && module != null) {
     const found = (module.handler && module) || module[method]
       || module[method.toLowerCase()] || module.ANY || module.any
@@ -76,7 +75,7 @@ async function findHandler(method, path) {
     if (typeof found == 'object') {
       return {
         handler: found.handler,
-        access: found.access || module.access || 
+        access: found.access || module.access ||
           (secure && 'admin') || 'guest'
       }
     }
