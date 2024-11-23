@@ -24,7 +24,7 @@ async function handleAPI(request, response) {
       await findHandler(method, path) :
       apiHandlers[path][method] || apiHandlers[path].ANY
 
-    if (!handler) throw 'unable to handle this APIrequest path or method'
+    if (!handler) throw 'unable to handle this API request path or method'
 
     let grant, granted
 
