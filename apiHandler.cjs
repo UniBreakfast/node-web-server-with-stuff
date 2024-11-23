@@ -81,6 +81,8 @@ async function findHandler(method, path) {
       }
     }
   }
+
+  return { handler: null, access: null }
 }
 
 function findCheck(access) {
