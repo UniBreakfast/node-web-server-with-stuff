@@ -1,11 +1,9 @@
 module.exports = handleMiss
 
-
 async function handleMiss(request, response) {
-  const {method, url} = request
+  const { method, url } = request
   response.send(buildHTML(method, url), 404, "html")
 }
-
 
 function buildHTML(method, url) {
   return /* html */ `
@@ -20,7 +18,6 @@ function buildHTML(method, url) {
     </body>
   `
 }
-
 
 const style = /* css */ `
       * {
