@@ -64,7 +64,7 @@ async function findHandler(method, path) {
   if (typeof module == 'function')
     return { handler: module, access: secure && 'admin' || 'guest' }
   
-  if (typeof module == 'object') {
+  if (typeof module == 'object' && module != null) {
     const found = (module.handler && module) || module[method]
       || module[method.toLowerCase()] || module.ANY || module.any
 
