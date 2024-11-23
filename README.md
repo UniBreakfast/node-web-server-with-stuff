@@ -1,4 +1,4 @@
-# node-web-server-with-stuff
+# [node-web-server-with-stuff](https://github.com/UniBreakfast/node-web-server-with-stuff)
 
 A simple and customizable Node.js web server built with the built-in `http` module, enhanced with additional utilities for easier development and deployment.
 
